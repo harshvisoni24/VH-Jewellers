@@ -6,6 +6,7 @@ const schema = z.object({
   CLIENT_URL: z.string().url(),
   PORT: z.coerce.number().default(4000),
   FAST2SMS_API_KEY: z.string().optional(),
+  SELLER_SETUP_KEY: z.string().optional(),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 export const env = schema.parse(process.env);

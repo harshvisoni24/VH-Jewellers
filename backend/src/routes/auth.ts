@@ -90,6 +90,48 @@ router.post("/reset-password", otpLimiter, async (req, res) => {
   res.json({ message: "Password changed. Please log in with your new password." });
 });
 
+// ---- One-time seller sign-up: allowed only while NO seller (ADMIN) account exists ----
+// In production a SELLER_SETUP_KEY is required, so a stranger cannot claim the seller account on a fresh deployment.
+const keyRequired = env.NODE_ENV === "production" || !!env.SELLER_SETUP_KEY;
+const sha = (s: string) => crypto.createHash("sha256").update(s).digest();
+
+router.get("/seller-signup", async (_req, res) => {
+  const noSeller = (await prisma.user.count({ where: { role: "ADMIN" } })) === 0;
+  res.json({ open: noSeller && !(keyRequired && !env.SELLER_SETUP_KEY), needsKey: keyRequired });
+});
+
+const sellerSchema = z.object({
+  name: z.string().min(2), email: z.string().email(), password: z.string().min(8),
+  phone: z.string().transform(normalizePhone).refine(isValidMobile, "Enter a valid 10-digit mobile number."),
+  setupKey: z.string().optional(),
+});
+
+router.post("/seller-register", otpLimiter, async (req, res) => {
+  const parsed = sellerSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(422).json({ error: "Check your name, email, 10-digit mobile number and a password of at least 8 characters." });
+  const { name, email, password, phone, setupKey } = parsed.data;
+  if (keyRequired && (!env.SELLER_SETUP_KEY || !crypto.timingSafeEqual(sha(setupKey ?? ""), sha(env.SELLER_SETUP_KEY))))
+    return res.status(403).json({ error: "Invalid setup key." });
+  const passwordHash = await bcrypt.hash(password, 12);
+  try {
+    // Serializable transaction: two simultaneous requests cannot both create a seller.
+    const user = await prisma.$transaction(async (tx) => {
+      if ((await tx.user.count({ where: { role: "ADMIN" } })) > 0) throw new Error("CLOSED");
+      if (await tx.user.findUnique({ where: { email } })) throw new Error("EMAIL");
+      if (await tx.user.findFirst({ where: { phone: { endsWith: phone } } })) throw new Error("PHONE");
+      return tx.user.create({ data: { name, email, phone, passwordHash, role: "ADMIN" }, select: { id: true, name: true, email: true, role: true } });
+    }, { isolationLevel: "Serializable" });
+    res.status(201).json(user); // no login cookie here: the seller logs in on the next screen
+  } catch (e) {
+    const m = (e as Error).message;
+    if (m === "CLOSED") return res.status(403).json({ error: "A seller account already exists. Please log in." });
+    if (m === "EMAIL") return res.status(409).json({ error: "An account with this email already exists." });
+    if (m === "PHONE") return res.status(409).json({ error: "An account with this mobile number already exists." });
+    console.error("Seller sign-up failed:", m);
+    res.status(500).json({ error: "Could not create the seller account. Try again." });
+  }
+});
+
 router.post("/logout", (_req, res) => { res.clearCookie("token", cookieOpts); res.status(204).end(); });
 
 router.get("/me", requireAuth, async (req, res) => {

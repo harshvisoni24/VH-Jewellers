@@ -1,6 +1,7 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { api } from "../api/client";
 import { safeRedirect } from "../hooks/useRequireLogin";
 
 /** Buyer login/register live at /login and /register. The seller (admin) door is /seller/login only. */
@@ -13,6 +14,8 @@ export default function AuthForm({ mode, seller = false }: { mode: "login" | "re
   const nav = useNavigate();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [sellerSignupOpen, setSellerSignupOpen] = useState(false);
+  useEffect(() => { if (isAdmin) api<{ open: boolean }>("/auth/seller-signup").then((r) => setSellerSignupOpen(r.open)).catch(() => setSellerSignupOpen(false)); }, [isAdmin]);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -40,7 +43,9 @@ export default function AuthForm({ mode, seller = false }: { mode: "login" | "re
         <button disabled={busy} className="mt-6 w-full rounded-sm bg-gold py-3 font-medium text-white disabled:opacity-60">{busy ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}</button>
         <div className="mt-4 space-y-2">
           {isAdmin ? (
-            <p className="text-center text-xs text-ink/50">Seller accounts are created by the store owner.</p>
+            sellerSignupOpen
+              ? <Link to="/seller/register" className={link}>First time? Create the seller account</Link>
+              : <p className="text-center text-xs text-ink/50">Seller sign-up is closed. Only one seller account can be created.</p>
           ) : mode === "login" ? (
             <Link to={`/register${qs}`} className={link}>New customer? Create an account</Link>
           ) : (
