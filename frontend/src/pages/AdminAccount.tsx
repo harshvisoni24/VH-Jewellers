@@ -16,7 +16,7 @@ export default function AdminAccount() {
     if (f.newPassword && f.newPassword !== f.confirm) { setOk(false); return setMsg("The two new passwords do not match."); }
     setBusy(true); setMsg("");
     try {
-      await api("/auth/change-credentials", { method: "POST", json: { currentPassword: f.currentPassword, newEmail: f.newEmail || undefined, newPassword: f.newPassword || undefined } });
+      await api("/auth/change-credentials", { method: "POST", json: { currentPassword: f.currentPassword, newEmail: f.newEmail || undefined, newPassword: f.newPassword || undefined, newPhone: f.newPhone || undefined } });
       setOk(true); setMsg("Saved. Use your new login details next time you sign in."); form.reset();
     } catch (err) { setOk(false); setMsg((err as Error).message); } finally { setBusy(false); }
   }
@@ -25,8 +25,9 @@ export default function AdminAccount() {
   return (
     <form onSubmit={save} className="max-w-lg space-y-4 px-5 py-6">
       <h1 className="font-display text-3xl text-emerald">Login details</h1>
-      <p className="text-sm text-ink/60">Current login email: <strong>{user?.email}</strong>. Leave a field empty to keep it unchanged.</p>
+      <p className="text-sm text-ink/60">Current login email: <strong>{user?.email}</strong>. Leave a field empty to keep it unchanged. Save your mobile number here so "Forgot password?" can reach you.</p>
       <label className="block text-sm">New email<input name="newEmail" type="email" autoComplete="email" className={c} /></label>
+      <label className="block text-sm">Mobile number for password-reset OTP<input name="newPhone" type="tel" inputMode="numeric" pattern="(\+?91)?[\s-]?[6-9][0-9]{9}" title="10-digit mobile number" placeholder="9876543210" className={c} /></label>
       <label className="block text-sm">New password (min 8 characters)<input name="newPassword" type="password" minLength={8} autoComplete="new-password" className={c} /></label>
       <label className="block text-sm">Confirm new password<input name="confirm" type="password" minLength={8} autoComplete="new-password" className={c} /></label>
       <label className="block text-sm">Current password (required)<input name="currentPassword" type="password" required autoComplete="current-password" className={c} /></label>

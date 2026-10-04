@@ -138,16 +138,21 @@ router.post("/change-credentials", requireAuth, otpLimiter, async (req, res) => 
     currentPassword: z.string().min(1),
     newEmail: z.string().email().optional(),
     newPassword: z.string().min(8).optional(),
+    newPhone: z.string().transform(normalizePhone).refine(isValidMobile).optional(),
   }).safeParse(req.body);
-  if (!parsed.success || (!parsed.data.newEmail && !parsed.data.newPassword))
-    return res.status(422).json({ error: "Enter your current password and a valid new email and/or a new password of at least 8 characters." });
-  const { currentPassword, newEmail, newPassword } = parsed.data;
+  if (!parsed.success || (!parsed.data.newEmail && !parsed.data.newPassword && !parsed.data.newPhone))
+    return res.status(422).json({ error: "Enter your current password and a valid new email, a 10-digit mobile number and/or a new password of at least 8 characters." });
+  const { currentPassword, newEmail, newPassword, newPhone } = parsed.data;
   const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
   if (!user || !(await bcrypt.compare(currentPassword, user.passwordHash))) return res.status(401).json({ error: "Current password is incorrect." });
-  const data: { email?: string; passwordHash?: string } = {};
+  const data: { email?: string; passwordHash?: string; phone?: string } = {};
   if (newEmail && newEmail.toLowerCase() !== user.email.toLowerCase()) {
     if (await prisma.user.findUnique({ where: { email: newEmail } })) return res.status(409).json({ error: "An account with this email already exists." });
     data.email = newEmail;
+  }
+  if (newPhone) {
+    if (await prisma.user.findFirst({ where: { phone: { endsWith: newPhone }, NOT: { id: user.id } } })) return res.status(409).json({ error: "This mobile number is already used by another account." });
+    data.phone = newPhone;
   }
   if (newPassword) data.passwordHash = await bcrypt.hash(newPassword, 12);
   if (!Object.keys(data).length) return res.status(422).json({ error: "Nothing to change." });
