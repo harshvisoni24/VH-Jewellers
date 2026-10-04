@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const links = [["/admin", "Dashboard"], ["/admin/products", "Products"], ["/admin/products/new", "Add product"], ["/admin/orders", "Orders"], ["/admin/inventory", "Inventory"], ["/admin/customers", "Customers"], ["/admin/coupons", "Coupons"], ["/admin/categories", "Categories"], ["/admin/reviews", "Reviews"], ["/admin/questions", "Questions"], ["/admin/notifications", "Notifications"], ["/admin/settings", "Settings"]] as const;
+const links = [["/admin", "Dashboard"], ["/admin/products", "Products"], ["/admin/products/new", "Add product"], ["/admin/orders", "Orders"], ["/admin/inventory", "Inventory"], ["/admin/customers", "Customers"], ["/admin/coupons", "Coupons"], ["/admin/categories", "Categories"], ["/admin/reviews", "Reviews"], ["/admin/questions", "Questions"], ["/admin/notifications", "Notifications"], ["/admin/settings", "Settings"], ["/admin/account", "Login details"]] as const;
 export default function AdminLayout() {
   const { logout } = useAuth();
   return (

@@ -19,6 +19,7 @@ import { AdminCategories, AdminCoupons, AdminCustomers, AdminInventory, AdminRev
 import RequireRole from "./components/RequireRole";
 import ForgotPassword from "./pages/ForgotPassword";
 import SellerRegister from "./pages/SellerRegister";
+import AdminAccount from "./pages/AdminAccount";
 
 export default function App() {
   return (
@@ -48,6 +49,7 @@ export default function App() {
         <Route path="products/:id" element={<AdminProductEdit />} />
         <Route path="questions" element={<AdminQuestions />} />
         <Route path="settings" element={<AdminSettings />} />
+        <Route path="account" element={<AdminAccount />} />
         <Route path="categories" element={<AdminCategories />} />
         <Route path="reviews" element={<AdminReviews />} />
         <Route path="notifications" element={<Notifications admin />} />
