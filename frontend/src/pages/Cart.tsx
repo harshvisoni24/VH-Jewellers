@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, rupees } from "../api/client";
+import StateSelect from "../components/StateSelect";
 
 interface CartData { items: { id: string; quantity: number; product: { name: string; stock: number; imageUrl?: string; finalPricePaise: number } }[]; subtotalPaise: number }
 
@@ -52,7 +53,7 @@ export default function Cart() {
             <fieldset disabled={!!saved} hidden={!!saved} className="space-y-3"><input name="fullName" placeholder="Full name" required className={input} /><input name="phone" placeholder="Phone" required minLength={10} className={input} />
             <input name="line1" placeholder="Address line 1" required className={input} /><input name="line2" placeholder="Address line 2 (optional)" className={input} />
             <div className="flex gap-2"><input name="city" placeholder="City" required className={input} /><input name="pincode" placeholder="Pincode" required pattern="\d{6}" className={input} /></div>
-            <input name="state" placeholder="State" required className={input} /></fieldset><input name="couponCode" placeholder="Coupon code (optional)" className={input} />
+            <StateSelect className={input} /></fieldset><input name="couponCode" placeholder="Coupon code (optional)" className={input} />
             <p className="flex justify-between border-t pt-3"><span>Subtotal</span><strong>{rupees(data.subtotalPaise)}</strong></p>
             <p className="text-xs text-ink/60">Delivery and coupon discounts are calculated when you place the order. Delivery is free above ₹10,000.</p>
             {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
