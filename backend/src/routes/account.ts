@@ -2,6 +2,7 @@ import { Router } from "express";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { prisma, requireAuth } from "../middleware/auth";
+import { isValidMobile, normalizePhone } from "../utils/phone";
 
 const router = Router(); // mounted at /api/account
 router.use(requireAuth);
@@ -12,8 +13,10 @@ router.get("/", async (req, res) => res.json(await prisma.user.findUnique({ wher
   select: { name: true, email: true, phone: true, addresses: { orderBy: { id: "desc" } } } })));
 
 router.patch("/", async (req, res) => {
-  const b = z.object({ name: z.string().min(2), phone: z.string().min(10).optional() }).safeParse(req.body);
-  if (!b.success) return res.status(422).json({ error: "Check your name and phone number." });
+  const b = z.object({ name: z.string().min(2), phone: z.string().transform(normalizePhone).refine(isValidMobile).optional() }).safeParse(req.body);
+  if (!b.success) return res.status(422).json({ error: "Check your name and enter a valid 10-digit mobile number." });
+  if (b.data.phone && await prisma.user.findFirst({ where: { phone: { endsWith: b.data.phone }, NOT: { id: req.user!.id } } }))
+    return res.status(409).json({ error: "This mobile number is already used by another account." });
   res.json(await prisma.user.update({ where: { id: req.user!.id }, data: b.data, select: { name: true, phone: true } }));
 });
 

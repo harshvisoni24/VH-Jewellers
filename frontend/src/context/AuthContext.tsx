@@ -3,7 +3,7 @@ import { api } from "../api/client";
 
 export interface User { id: string; name: string; email: string; role: "BUYER" | "ADMIN" }
 interface Ctx { user: User | null; loading: boolean; login(email: string, password: string, portal: User["role"]): Promise<User>;
-  register(d: { name: string; email: string; password: string }): Promise<User>; logout(): Promise<void> }
+  register(d: { name: string; email: string; password: string; phone: string }): Promise<User>; logout(): Promise<void> }
 const AuthCtx = createContext<Ctx>(null!);
 export const useAuth = () => useContext(AuthCtx);
 

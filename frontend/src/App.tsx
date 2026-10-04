@@ -17,6 +17,7 @@ import AdminProductEdit from "./pages/AdminProductEdit";
 import Notifications from "./pages/Notifications";
 import { AdminCategories, AdminCoupons, AdminCustomers, AdminInventory, AdminReviews } from "./pages/AdminLists";
 import RequireRole from "./components/RequireRole";
+import ForgotPassword from "./pages/ForgotPassword";
 
 export default function App() {
   return (
@@ -29,6 +30,8 @@ export default function App() {
       <Route path="/login" element={<AuthForm mode="login" />} />
       <Route path="/register" element={<AuthForm mode="register" />} />
       <Route path="/seller/login" element={<AuthForm mode="login" seller />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/seller/forgot-password" element={<ForgotPassword seller />} />
       {/* Buyer account area: login required */}
       <Route path="/wishlist" element={<RequireRole role="BUYER"><Wishlist /></RequireRole>} />
       <Route path="/notifications" element={<RequireRole role="BUYER"><Notifications /></RequireRole>} />
