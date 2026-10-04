@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-import RoleSelect from "./pages/RoleSelect";
 import AuthForm from "./pages/AuthForm";
 import Shop from "./pages/Shop";
 import Cart from "./pages/Cart";
@@ -22,11 +21,15 @@ import RequireRole from "./components/RequireRole";
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<RoleSelect />} />
+      {/* Public: anyone can browse the shop and view products without an account */}
+      <Route path="/" element={<Shop />} />
+      <Route path="/shop" element={<Shop />} />
+      <Route path="/products/:id" element={<ProductDetail />} />
+      {/* Auth pages */}
       <Route path="/login" element={<AuthForm mode="login" />} />
       <Route path="/register" element={<AuthForm mode="register" />} />
-      <Route path="/shop" element={<RequireRole role="BUYER"><Shop /></RequireRole>} />
-      <Route path="/products/:id" element={<RequireRole role="BUYER"><ProductDetail /></RequireRole>} />
+      <Route path="/seller/login" element={<AuthForm mode="login" seller />} />
+      {/* Buyer account area: login required */}
       <Route path="/wishlist" element={<RequireRole role="BUYER"><Wishlist /></RequireRole>} />
       <Route path="/notifications" element={<RequireRole role="BUYER"><Notifications /></RequireRole>} />
       <Route path="/profile" element={<RequireRole role="BUYER"><Profile /></RequireRole>} />
