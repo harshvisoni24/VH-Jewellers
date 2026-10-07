@@ -7,20 +7,7 @@ const Table = ({ title, head, children }: { title: string; head: string[]; child
     <table className="mt-6 w-full min-w-[600px] bg-white text-left text-sm"><thead><tr className="border-b">{head.map((h) => <th key={h} className="p-3">{h}</th>)}</tr></thead><tbody>{children}</tbody></table></div>);
 const td = "p-3";
 
-export function AdminInventory() {
-  const { data } = useQuery({ queryKey: ["inventory"], queryFn: () => api<{ id: string; sku: string; name: string; stock: number; reservedStock: number; available: number; status: string }[]>("/admin/inventory") });
-  return <Table title="Inventory" head={["Product", "SKU", "Current stock", "Reserved", "Available", "Status"]}>{data?.map((p) => (
-    <tr key={p.id} className="border-b"><td className={td}>{p.name}</td><td>{p.sku}</td><td>{p.stock}</td><td>{p.reservedStock}</td><td>{p.available}</td><td>{p.status}</td></tr>))}</Table>;
-}
-
-export function AdminCustomers() {
-  const qc = useQueryClient();
-  const { data } = useQuery({ queryKey: ["customers"], queryFn: () => api<{ id: string; name: string; email: string; phone?: string; createdAt: string; orders: number; totalSpentPaise: number; isActive: boolean }[]>("/admin/customers") });
-  const toggle = (id: string, isActive: boolean) => api(`/admin/customers/${id}`, { method: "PATCH", json: { isActive } }).then(() => qc.invalidateQueries({ queryKey: ["customers"] }));
-  return <Table title="Customers" head={["Name", "Email", "Phone", "Joined", "Orders", "Total spent", "Account"]}>{data?.map((u) => (
-    <tr key={u.id} className="border-b"><td className={td}>{u.name}</td><td>{u.email}</td><td>{u.phone ?? "—"}</td><td>{new Date(u.createdAt).toLocaleDateString("en-IN")}</td><td>{u.orders}</td><td>{rupees(u.totalSpentPaise)}</td>
-      <td><button onClick={() => toggle(u.id, !u.isActive)} className="underline">{u.isActive ? "Active (disable)" : "Disabled (enable)"}</button></td></tr>))}</Table>;
-}
+export { AdminInventory, AdminCustomers } from "./AdminInventoryCustomers";
 
 export function AdminCoupons() {
   const qc = useQueryClient();

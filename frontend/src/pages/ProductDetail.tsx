@@ -2,8 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, rupees } from "../api/client";
-import { useAuth } from "../context/AuthContext";
-import { useRequireLogin } from "../hooks/useRequireLogin";
+import { useBuyerGuard } from "../hooks/useBuyerGuard";
 
 interface Product { id: string; name: string; sku: string; description: string; material: string; purity?: string; weightGrams?: string; size?: string; brand?: string;
   pricePaise: number; finalPricePaise: number; discountPercent: number; stock: number; ratingAvg: string; reviewCount: number; images: { id: string; url: string }[] }
@@ -11,9 +10,8 @@ interface Reviews { reviews: { id: string; rating: number; title: string; commen
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const guard = useBuyerGuard();
   const qc = useQueryClient();
-  const { user } = useAuth();
-  const requireLogin = useRequireLogin();
   const [img, setImg] = useState(0);
   useEffect(() => { // remember recently viewed products in this browser
     if (!id) return;
@@ -25,17 +23,15 @@ export default function ProductDetail() {
   const reviews = useQuery({ queryKey: ["reviews", id], queryFn: () => api<Reviews>(`/products/${id}/reviews`) });
   const qa = useQuery({ queryKey: ["qa", id], queryFn: () => api<{ id: string; question: string; answer?: string; createdAt: string; user: { name: string } }[]>(`/products/${id}/questions`) });
   async function ask(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault(); const el = e.currentTarget;
-    if (!user) return requireLogin(() => {});
-    await api(`/products/${id}/questions`, { method: "POST", json: { question: String(new FormData(el).get("question")) } }).then(() => { el.reset(); setMsg("Question sent. We'll answer soon."); qc.invalidateQueries({ queryKey: ["qa", id] }); }).catch((x) => setMsg(x.message));
+    e.preventDefault(); const el = e.currentTarget; const question = String(new FormData(el).get("question"));
+    guard(() => { api(`/products/${id}/questions`, { method: "POST", json: { question } }).then(() => { el.reset(); setMsg("Question sent. We'll answer soon."); qc.invalidateQueries({ queryKey: ["qa", id] }); }).catch((x) => setMsg(x.message)); });
   }
   const act = (fn: Promise<unknown>, ok: string) => fn.then(() => setMsg(ok)).catch((e) => setMsg(e.message));
 
   async function submitReview(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!user) return requireLogin(() => {});
     const f = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
-    await act(api(`/products/${id}/reviews`, { method: "POST", json: { rating, title: f.title, comment: f.comment } }).then(() => { qc.invalidateQueries({ queryKey: ["reviews", id] }); qc.invalidateQueries({ queryKey: ["product", id] }); }), "Review saved.");
+    guard(() => { act(api(`/products/${id}/reviews`, { method: "POST", json: { rating, title: f.title, comment: f.comment } }).then(() => { qc.invalidateQueries({ queryKey: ["reviews", id] }); qc.invalidateQueries({ queryKey: ["product", id] }); }), "Review saved."); });
   }
   if (product.isLoading) return <p className="p-10">Loading…</p>;
   if (product.error || !product.data) return <p className="p-10">We couldn't find this product. <Link to="/shop" className="underline">Back to shop</Link></p>;
@@ -55,8 +51,8 @@ export default function ProductDetail() {
           <dl className="mt-4 grid grid-cols-2 gap-1 text-sm"><dt>Material</dt><dd>{p.material}</dd>{p.purity && <><dt>Purity</dt><dd>{p.purity}</dd></>}{p.weightGrams && <><dt>Weight</dt><dd>{p.weightGrams} g</dd></>}{p.size && <><dt>Size</dt><dd>{p.size}</dd></>}{p.brand && <><dt>Brand</dt><dd>{p.brand}</dd></>}</dl>
           <p className="mt-4 text-sm text-ink/60">Delivery in 3–7 working days. Free delivery above ₹10,000.</p>
           <div className="mt-5 flex gap-3">
-            <button disabled={!p.stock} onClick={() => requireLogin(() => act(api("/cart/items", { method: "POST", json: { productId: p.id, quantity: 1 } }), "Added to cart."))} className="rounded-sm bg-gold px-5 py-3 text-white disabled:opacity-50">Add to cart</button>
-            <button onClick={() => requireLogin(() => act(api("/wishlist/items", { method: "POST", json: { productId: p.id } }), "Saved to wishlist."))} className="rounded-sm border border-gold px-5 py-3">Add to wishlist</button></div>
+            <button disabled={!p.stock} onClick={() => guard(() => { act(api("/cart/items", { method: "POST", json: { productId: p.id, quantity: 1 } }), "Added to cart."); })} className="rounded-sm bg-gold px-5 py-3 text-white disabled:opacity-50">Add to cart</button>
+            <button onClick={() => guard(() => { act(api("/wishlist/items", { method: "POST", json: { productId: p.id } }), "Saved to wishlist."); })} className="rounded-sm border border-gold px-5 py-3">Add to wishlist</button></div>
           {msg && <p role="status" className="mt-3 text-sm">{msg}</p>}
         </div>
       </div>

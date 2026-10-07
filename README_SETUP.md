@@ -4,6 +4,12 @@ Full-stack jewellery store (React + Vite + Tailwind, Express, Prisma, PostgreSQL
 
 **Done so far:** Phase 1 scaffold, full Prisma schema, auth (register/login/logout/me), role-based middleware, role-selection landing page.
 
+## Login flow
+- Anyone can browse `/` (shop), search and open product pages without an account.
+- Buyer login is required for: add to cart, wishlist, cart, checkout/orders, profile, reviews and questions. Guests are sent to `/login?redirect=...` and returned to the same page after logging in.
+- Seller account: created once at `/seller/register`. The page works only while no seller exists; after that the API refuses new sellers. In production it also needs `SELLER_SETUP_KEY` from `.env`. Sellers reset a forgotten password with a mobile OTP.
+- Sellers (admin role) sign in only at `/seller/login`; every `/admin/*` page and `/api/admin/*` route requires the ADMIN role. Seller accounts are never created from public sign-up.
+
 ## Run
 ```
 cd backend && cp .env.example .env   # set DATABASE_URL and a 32+ char JWT_SECRET
@@ -12,19 +18,11 @@ cd ../frontend && npm install && npm run dev
 ```
 Money is stored as integer paise. `OrderItem.priceAtPurchasePaise` freezes the price at purchase.
 
-## First login
-The store opens on the buyer shop. Anyone can browse; the cart, wishlist, reviews and orders ask for a login.
-There is one **Log in** button for everybody: enter your admin email and password there and you are taken to the admin portal; buyers go back to the shop.
-
-`cd backend && npm run db:seed` creates the six product categories and the admin account (admin@vhjewellers.test / Admin@12345). No demo products, customers or orders.
-Admin login says "Email or password is incorrect."? Run `npm run create-admin` in `backend` (creates the admin or resets its password), or
-`npm run create-admin -- you@example.com 'YourPassword123'` to choose your own. Change the default password before going live.
-Buyers register themselves from the shop (Create account). Add products from Admin -> Add product.
-
-Already seeded with the old demo data? Run `npm run db:clean-demo` once in `backend`. It removes only the demo buyers, their orders, the demo placeholder products and the WELCOME10 sample coupon. Products you gave real photos to are kept.
-
-## Seller portal lists
-Products, Orders, Inventory and Customers load 20 rows per page with server-side search, filters and sorting (GET /api/admin/list/products|orders|inventory|customers).
+## Seed and demo logins
+`cd backend && npm run db:seed`
+- Seller/admin: admin@vhjewellers.test / Admin@12345 (sign in at /seller/login)
+- Buyer: asha@example.test / Buyer@12345
+Demo data only. Never use these in production.
 
 ## API so far
 Auth: POST /api/auth/register|login|logout, GET /api/auth/me

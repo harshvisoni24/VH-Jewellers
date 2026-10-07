@@ -14,6 +14,7 @@ import { adminExtras } from "./routes/adminExtras";
 import authRoutes from "./routes/auth";
 import productRoutes from "./routes/products";
 import analyticsRoutes from "./routes/analytics";
+import { adminLists } from "./routes/adminLists";
 import cartRoutes from "./routes/cart";
 import orderRoutes, { adminOrders } from "./routes/orders";
 import { devPayments, paymentWebhook } from "./routes/payments";
@@ -40,6 +41,7 @@ app.use("/api/auth", rateLimit({ windowMs: 15 * 60_000, limit: 50 }), authRoutes
 const admin = express.Router();
 admin.use(requireAuth, requireRole("ADMIN"));
 admin.use("/analytics", analyticsRoutes);
+admin.use("/list", adminLists); // paginated + filtered seller-portal lists
 admin.use("/orders", adminOrders);
 admin.use("/", adminExtras);
 app.use("/api/admin", admin);

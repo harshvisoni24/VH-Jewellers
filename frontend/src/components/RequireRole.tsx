@@ -7,12 +7,7 @@ export default function RequireRole({ role, children }: { role: User["role"]; ch
   const { user, loading } = useAuth();
   const loc = useLocation();
   if (loading) return <p className="p-10 text-center text-ink/60">Loading…</p>;
-  if (!user) {
-    // Sellers/admins always use their own sign-in page; buyers are sent back to where they were after login.
-    return role === "ADMIN"
-      ? <Navigate to="/seller/login" replace />
-      : <Navigate to={`/login?redirect=${encodeURIComponent(loc.pathname + loc.search)}`} replace />;
-  }
+  if (!user) return <Navigate to={`/login?next=${encodeURIComponent(loc.pathname + loc.search)}`} replace />;
   if (user.role !== role) return <Navigate to={user.role === "ADMIN" ? "/admin" : "/"} replace />;
   return <>{children}</>;
 }

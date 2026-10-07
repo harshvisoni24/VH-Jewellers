@@ -4,15 +4,15 @@ import { Link } from "react-router-dom";
 import { api, rupees } from "../api/client";
 import HomeSections from "../components/HomeSections";
 import { useAuth } from "../context/AuthContext";
-import { useRequireLogin } from "../hooks/useRequireLogin";
+import { useBuyerGuard } from "../hooks/useBuyerGuard";
 
 interface Product { id: string; name: string; sku: string; material: string; purity?: string; pricePaise: number; finalPricePaise: number;
   discountPercent: number; stock: number; images: { url: string }[] }
 interface Page { total: number; items: Product[] }
 
 export default function Shop() {
-  const { user, logout } = useAuth();
-  const requireLogin = useRequireLogin();
+  const { user, loading, logout } = useAuth();
+  const guard = useBuyerGuard();
   const [q, setQ] = useState("");
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
@@ -27,7 +27,7 @@ export default function Shop() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-6">
       <header className="flex flex-wrap items-center gap-4">
-        <h1 className="font-display text-3xl text-emerald">VH Jewellers</h1>
+        <h1 className="font-display text-3xl text-emerald"><Link to="/">VH Jewellers</Link></h1>
         <input value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} placeholder="Search rings, gold, SKU…" aria-label="Search products" list="sugg"
           className="min-w-0 flex-1 rounded-sm border border-ink/20 px-3 py-2" />
         <select value={category} onChange={(e) => { setCategory(e.target.value); setPage(1); }} aria-label="Category" className="rounded-sm border border-ink/20 px-2 py-2"><option value="">All categories</option>{cats.data?.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}</select>
@@ -35,16 +35,13 @@ export default function Shop() {
           <option value="newest">Newest</option><option value="price_asc">Price: low to high</option>
           <option value="price_desc">Price: high to low</option><option value="rating">Top rated</option>
         </select>
-        {user ? (<>
-          <Link to="/profile" className="text-sm underline">Profile</Link><Link to="/notifications" className="text-sm underline">Notifications</Link><Link to="/wishlist" className="text-sm underline">Wishlist</Link><Link to="/cart" className="text-sm underline">Cart</Link><Link to="/orders" className="text-sm underline">My orders</Link><span className="text-sm text-ink/60">{user.name}</span>
-          {user.role === "ADMIN" && <Link to="/admin" className="text-sm underline">Seller dashboard</Link>}
-          <button onClick={logout} className="text-sm underline">Log out</button>
-        </>) : (<>
-          <Link to="/cart" className="text-sm underline">Cart</Link>
-          <Link to="/login" className="text-sm underline">Log in</Link>
-          <Link to="/register" className="rounded-sm bg-gold px-3 py-1.5 text-sm text-white">Sign up</Link>
-          <Link to="/seller/login" className="text-xs text-ink/50 underline">Sell with us</Link>
-        </>)}
+        {user?.role === "BUYER" && <>
+          <Link to="/profile" className="text-sm underline">Profile</Link><Link to="/notifications" className="text-sm underline">Notifications</Link><Link to="/wishlist" className="text-sm underline">Wishlist</Link><Link to="/cart" className="text-sm underline">Cart</Link><Link to="/orders" className="text-sm underline">My orders</Link>
+          <span className="text-sm text-ink/60">{user.name}</span><button onClick={logout} className="text-sm underline">Log out</button></>}
+        {user?.role === "ADMIN" && <>
+          <Link to="/admin" className="rounded-sm bg-emerald px-4 py-2 text-sm text-white">Admin dashboard</Link><button onClick={logout} className="text-sm underline">Log out</button></>}
+        {!user && !loading && <>
+          <Link to="/login" className="rounded-sm bg-gold px-5 py-2 text-sm font-medium text-white">Log in</Link><Link to="/register" className="text-sm underline">Create account</Link></>}
       </header>
       <datalist id="sugg">{sugg.data?.map((n) => <option key={n} value={n} />)}</datalist>
       {!q && !category && !filtered && page === 1 && <HomeSections />}
@@ -69,7 +66,7 @@ export default function Shop() {
               <p className="text-sm text-ink/60">{p.material}{p.purity && ` · ${p.purity}`}</p>
               <p className="mt-1 font-medium">{rupees(p.finalPricePaise)}
                 {p.discountPercent > 0 && <span className="ml-2 text-sm text-ink/50 line-through">{rupees(p.pricePaise)}</span>}</p>
-              {p.stock === 0 ? <p className="text-sm text-red-700">Out of stock</p> : <button onClick={() => requireLogin(() => api("/cart/items", { method: "POST", json: { productId: p.id, quantity: 1 } }).then(() => alert("Added to cart")).catch((e) => alert(e.message)))} className="mt-2 w-full rounded-sm bg-gold py-2 text-sm text-white">Add to cart</button>}
+              {p.stock === 0 ? <p className="text-sm text-red-700">Out of stock</p> : <button onClick={() => guard(() => { api("/cart/items", { method: "POST", json: { productId: p.id, quantity: 1 } }).then(() => alert("Added to cart")).catch((e) => alert(e.message)); })} className="mt-2 w-full rounded-sm bg-gold py-2 text-sm text-white">Add to cart</button>}
             </div>
           </li>
         ))}

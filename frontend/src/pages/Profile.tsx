@@ -2,7 +2,6 @@ import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api/client";
-import StateSelect from "../components/StateSelect";
 
 interface Account { name: string; email: string; phone?: string; addresses: { id: string; fullName: string; phone: string; line1: string; line2?: string; city: string; state: string; pincode: string }[] }
 
@@ -33,7 +32,7 @@ export default function Profile() {
       <form onSubmit={addAddress} className="mt-4 grid max-w-md gap-2 bg-white p-4">
         <h3 className="font-display text-xl">Add an address</h3>
         <input name="fullName" placeholder="Full name" required className={c} /><input name="phone" placeholder="Phone" required minLength={10} className={c} /><input name="line1" placeholder="Address line 1" required className={c} />
-        <input name="line2" placeholder="Address line 2" className={c} /><input name="city" placeholder="City" required className={c} /><StateSelect className={c} /><input name="pincode" placeholder="Pincode" required pattern="\d{6}" className={c} />
+        <input name="line2" placeholder="Address line 2" className={c} /><input name="city" placeholder="City" required className={c} /><input name="state" placeholder="State" required className={c} /><input name="pincode" placeholder="Pincode" required pattern="\d{6}" className={c} />
         <button className="rounded-sm bg-gold px-4 py-2 text-white">Save address</button></form>
     </div>
   );

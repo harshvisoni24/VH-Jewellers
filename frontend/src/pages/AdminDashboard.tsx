@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { api, rupees } from "../api/client";
-import { useAuth } from "../context/AuthContext";
 
 interface Sales { unit: "hour" | "day" | "month"; averageOrderPaise: number; totals: { revenuePaise: number; orders: number; unitsSold: number };
   series: { date: string; revenuePaise: number; orders: number; unitsSold: number }[] }
@@ -10,7 +9,6 @@ const RANGES = [["today", "Today"], ["7d", "7 days"], ["30d", "30 days"], ["3m",
 const METRICS = { revenue: "Revenue", orders: "Orders", units: "Products sold" } as const;
 
 export default function AdminDashboard() {
-  const { logout } = useAuth();
   const [range, setRange] = useState<string>("30d");
   const [from, setFrom] = useState(""); const [to, setTo] = useState("");
   const [metric, setMetric] = useState<keyof typeof METRICS>("revenue");
@@ -23,7 +21,7 @@ export default function AdminDashboard() {
   const stat = "bg-white p-5";
   return (
     <div className="mx-auto max-w-6xl px-5 py-6">
-      <header className="flex items-center justify-between"><h1 className="font-display text-3xl text-emerald">Admin dashboard</h1><button onClick={logout} className="text-sm underline">Log out</button></header>
+      <header><h1 className="font-display text-3xl text-emerald">Admin dashboard</h1></header>
       <Summary />
       <h2 className="mt-8 font-display text-2xl">Sales</h2>
       <div className="mt-3 flex flex-wrap gap-2">

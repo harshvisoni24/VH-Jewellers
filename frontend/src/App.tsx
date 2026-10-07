@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import AuthForm from "./pages/AuthForm";
 import Shop from "./pages/Shop";
 import Cart from "./pages/Cart";
@@ -17,25 +17,15 @@ import AdminProductEdit from "./pages/AdminProductEdit";
 import Notifications from "./pages/Notifications";
 import { AdminCategories, AdminCoupons, AdminCustomers, AdminInventory, AdminReviews } from "./pages/AdminLists";
 import RequireRole from "./components/RequireRole";
-import ForgotPassword from "./pages/ForgotPassword";
-import SellerRegister from "./pages/SellerRegister";
-import AdminAccount from "./pages/AdminAccount";
 
 export default function App() {
   return (
     <Routes>
-      {/* Public: anyone can browse the shop and view products without an account */}
       <Route path="/" element={<Shop />} />
-      <Route path="/shop" element={<Shop />} />
-      <Route path="/products/:id" element={<ProductDetail />} />
-      {/* Auth pages */}
       <Route path="/login" element={<AuthForm mode="login" />} />
       <Route path="/register" element={<AuthForm mode="register" />} />
-      <Route path="/seller/login" element={<AuthForm mode="login" seller />} />
-      <Route path="/seller/register" element={<SellerRegister />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/seller/forgot-password" element={<ForgotPassword seller />} />
-      {/* Buyer account area: login required */}
+      <Route path="/shop" element={<Shop />} />
+      <Route path="/products/:id" element={<ProductDetail />} />
       <Route path="/wishlist" element={<RequireRole role="BUYER"><Wishlist /></RequireRole>} />
       <Route path="/notifications" element={<RequireRole role="BUYER"><Notifications /></RequireRole>} />
       <Route path="/profile" element={<RequireRole role="BUYER"><Profile /></RequireRole>} />
@@ -49,7 +39,6 @@ export default function App() {
         <Route path="products/:id" element={<AdminProductEdit />} />
         <Route path="questions" element={<AdminQuestions />} />
         <Route path="settings" element={<AdminSettings />} />
-        <Route path="account" element={<AdminAccount />} />
         <Route path="categories" element={<AdminCategories />} />
         <Route path="reviews" element={<AdminReviews />} />
         <Route path="notifications" element={<Notifications admin />} />
@@ -58,6 +47,7 @@ export default function App() {
         <Route path="customers" element={<AdminCustomers />} />
         <Route path="coupons" element={<AdminCoupons />} />
       </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
