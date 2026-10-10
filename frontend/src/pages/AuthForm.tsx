@@ -29,16 +29,14 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
   return (
     <main className="grid min-h-screen place-items-center px-5">
       <form onSubmit={submit} className="w-full max-w-sm rounded-sm bg-white p-8 shadow-sm">
-        <h1 className="font-display text-3xl text-emerald">{mode === "register" ? "Create account" : "Log in"}</h1>
+        <h1 className="font-display text-3xl text-emerald">{mode === "register" ? "Create account" : "Store login"}</h1>
         {mode === "register" && <label className="mt-5 block text-sm">Full name<input name="name" required minLength={2} className={field} /></label>}
         <label className="mt-4 block text-sm">Email<input name="email" type="email" required autoComplete="email" className={field} /></label>
         <label className="mt-4 block text-sm">Password<input name="password" type="password" required minLength={mode === "register" ? 8 : 1} autoComplete={mode === "register" ? "new-password" : "current-password"} className={field} /></label>
         {error && <p role="alert" className="mt-4 text-sm text-red-700">{error}</p>}
         <button disabled={busy} className="mt-6 w-full rounded-sm bg-gold py-3 font-medium text-white disabled:opacity-60">{busy ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}</button>
-        {mode === "login"
-          ? <p className="mt-4 text-center text-sm">New here? <Link to={`/register${q}`} className="text-emerald underline underline-offset-4">Create an account</Link></p>
-          : <p className="mt-4 text-center text-sm">Already have an account? <Link to={`/login${q}`} className="text-emerald underline underline-offset-4">Log in</Link></p>}
-        {mode === "login" && <p className="mt-2 text-center text-xs text-ink/60">Store owner? Log in here with your admin email to open the admin portal.</p>}
+        {mode === "register" && <p className="mt-4 text-center text-sm">Already have an account? <Link to={`/login${q}`} className="text-emerald underline underline-offset-4">Log in</Link></p>}
+        {mode === "login" && <p className="mt-4 text-center text-xs text-ink/60">This login is for the store owner. Shoppers don't need an account: add items to the cart and check out with your details.</p>}
         <Link to="/" className="mt-4 block text-center text-sm text-emerald underline underline-offset-4">Back to store</Link>
       </form>
     </main>

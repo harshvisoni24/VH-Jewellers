@@ -25,10 +25,6 @@ export default function HomeSections() {
   const { data } = useQuery({ queryKey: ["home"], queryFn: () => api<Home>("/home") });
   return (
     <div>
-      <section className="mt-8 bg-emerald px-8 py-14 text-pearl">
-        <h2 className="max-w-lg font-display text-4xl sm:text-5xl">Fine jewellery, made to be worn every day.</h2>
-        <p className="mt-3 max-w-md text-pearl/70">Gold, silver and platinum pieces, with the weight and purity listed on every product.</p>
-      </section>
       {data && <><Row title="New arrivals" items={data.newArrivals} /><Row title="Best sellers" items={data.bestSellers} /><Row title="Offers" items={data.offers} /></>}
       <Row title="Recently viewed" items={recent.data ?? []} />
     </div>

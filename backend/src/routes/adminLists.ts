@@ -125,6 +125,7 @@ adminLists.get("/customers", async (req, res) => {
   const { q, account, ordered, minSpent, maxSpent, sort } = p.data;
   const where: Prisma.UserWhereInput = {
     role: "BUYER",
+    NOT: { email: { endsWith: ".invalid" } }, // internal placeholder user that owns guest questions
     ...(account && { isActive: account === "active" }),
     ...(q && { OR: [{ name: { contains: q, mode: "insensitive" } }, { email: { contains: q, mode: "insensitive" } }, { phone: { contains: q } }] }),
   };

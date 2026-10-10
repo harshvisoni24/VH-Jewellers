@@ -134,6 +134,7 @@ adminOrders.patch("/:id/status", async (req, res) => {
     await tx.order.update({ where: { id: o.id }, data: { status: b.data.status } });
     if (b.data.status === "CANCELLED" && o.status !== "CANCELLED") await restoreStock(tx, o.id);
     if (b.data.status === "RETURNED" && o.status !== "RETURNED") await restoreStock(tx, o.id);
+    if (b.data.status === "DELIVERED") await tx.payment.updateMany({ where: { orderId: o.id, gateway: "cod", status: { not: "PAID" } }, data: { status: "PAID" } });
     if (b.data.status === "REFUNDED") await tx.payment.updateMany({ where: { orderId: o.id }, data: { status: "REFUNDED" } });
     await tx.notification.create({ data: { userId: o.userId, type: "ORDER_STATUS", message: `Your order ${o.orderNumber} is now ${b.data.status.replace(/_/g, " ").toLowerCase()}.` } });
   });

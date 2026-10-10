@@ -15,6 +15,7 @@ import authRoutes from "./routes/auth";
 import productRoutes from "./routes/products";
 import analyticsRoutes from "./routes/analytics";
 import { adminLists } from "./routes/adminLists";
+import { shop as shopRoutes } from "./routes/shop";
 import cartRoutes from "./routes/cart";
 import orderRoutes, { adminOrders } from "./routes/orders";
 import { devPayments, paymentWebhook } from "./routes/payments";
@@ -31,6 +32,7 @@ app.get("/api/categories", async (_req, res) => res.json(await prisma.category.f
 app.use("/api", miscRoutes);
 app.use("/api/account", accountRoutes);
 app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/shop", shopRoutes); // public storefront: guest cart pricing, checkout, tracking
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payments", devPayments);
