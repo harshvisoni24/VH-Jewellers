@@ -31,7 +31,7 @@ export default function Cart() {
       customer: { name: f.name, email: f.email, phone: f.phone },
       address: { line1: f.line1, line2: f.line2 || undefined, city: f.city, state: f.state, pincode: f.pincode },
       items: lines, couponCode: f.couponCode || undefined } }),
-    onSuccess: (order) => { nav("/order-placed", { state: order, replace: true }); clear(); },
+    onSuccess: (order, vars) => { nav("/order-placed", { state: { ...(order as object), email: vars.email }, replace: true }); clear(); },
     onError: (e: Error) => setError(e.message),
   });
   const submit = (e: FormEvent<HTMLFormElement>) => { e.preventDefault(); setError(""); place.mutate(Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>); };

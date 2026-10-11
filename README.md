@@ -20,6 +20,10 @@ Shoppers need no account. The store opens on the shop; the cart (with a count ba
 At checkout the shopper enters name, phone, email and delivery address, and the order is placed as **cash on delivery**. The order number plus the checkout email lets them track the order (Track order in the top bar).
 Prices, stock, coupons and delivery fees are always recalculated on the server (POST /api/shop/orders).
 
+**Receipts (PDF):** after placing an order the shopper can download a PDF receipt (also from Track order, with the order number and checkout email). The owner opens the same receipt from Admin -> Orders -> Receipt (it opens as a PDF in a new tab). Store name, address and GSTIN come from Admin -> Settings. Amounts print as "Rs." because the standard PDF fonts have no rupee sign.
+
+The site is responsive: it works on phones, tablets and desktops, including the admin portal.
+
 The **Log in** button in the top bar is for the store owner only: enter the admin email and password and you are taken to the admin portal.
 `cd backend && npm run db:seed` creates the six product categories and the admin account (admin@vhjewellers.test / Admin@12345). No demo products, customers or orders.
 Admin login says "Email or password is incorrect."? Run `npm run create-admin` in `backend` (creates the admin or resets its password), or

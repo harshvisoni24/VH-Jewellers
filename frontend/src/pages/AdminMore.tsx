@@ -33,7 +33,7 @@ export function AdminSettings() {
       <label className="block text-sm">Support email<input name="supportEmail" type="email" defaultValue={data.supportEmail} className={c} /></label>
       <label className="block text-sm">GSTIN (shown on invoices)<input name="gstin" defaultValue={data.gstin} className={c} /></label>
       <label className="block text-sm">Store address (shown on invoices)<textarea name="storeAddress" defaultValue={data.storeAddress} className={c} /></label>
-      <div className="grid grid-cols-2 gap-3"><label className="text-sm">Free delivery above (₹)<input name="freeDeliveryAbove" type="number" min={0} defaultValue={data.freeDeliveryAbove} className={c} /></label>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2"><label className="text-sm">Free delivery above (₹)<input name="freeDeliveryAbove" type="number" min={0} defaultValue={data.freeDeliveryAbove} className={c} /></label>
         <label className="text-sm">Delivery fee (₹)<input name="deliveryFee" type="number" min={0} defaultValue={data.deliveryFee} className={c} /></label></div>
       {msg && <p role="status">{msg}</p>}<button className="rounded-sm bg-gold px-5 py-3 text-night">Save settings</button></form>
   );

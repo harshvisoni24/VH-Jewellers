@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
@@ -33,6 +33,8 @@ export default function Shop() {
     setTimeout(() => setFlash((cur) => (cur?.id === p.id ? null : cur)), 1500);
   };
   const searching = !!(q || category || filtered);
+  const bandRef = useRef<HTMLElement>(null);
+  const goPage = (n: number) => { setPage(n); bandRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); };
 
   return (
     <div>
@@ -62,13 +64,13 @@ export default function Shop() {
       {!searching && page === 1 && <div className="mx-auto max-w-6xl px-5"><HomeSections /></div>}
 
       {/* The collection sits on a light band, like pages of a catalogue. */}
-      <section className="cream-band mt-24 py-16 sm:py-20">
+      <section ref={bandRef} className="cream-band mt-24 scroll-mt-20 py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-5">
           <SectionTitle tone="cream" eyebrow={searching ? "Your search" : "The collection"} title={searching ? "Search results" : "All jewellery"} />
           {isLoading && <p className="mt-10 text-center text-night/70">Loading jewellery…</p>}
           {error && <p className="mt-10 text-center text-red-800">{(error as Error).message}</p>}
           {data && data.items.length === 0 && <p className="mt-10 text-center text-night/70">{q ? `No products match “${q}”. Try a different word.` : "No products to show yet."}</p>}
-          <ul className="mt-12 grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
+          <ul className="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 sm:gap-y-12 md:grid-cols-3 lg:grid-cols-4">
             {data?.items.map((p) => (
               <li key={p.id} className="group text-center">
                 <Link to={`/products/${p.id}`} className="block overflow-hidden bg-night">
@@ -85,9 +87,9 @@ export default function Shop() {
           </ul>
           {data && data.total > 12 && (
             <nav aria-label="Pagination" className="mt-14 flex items-center justify-center gap-6">
-              <button disabled={page === 1} onClick={() => setPage(page - 1)} className="btn-ink !px-5 !py-2.5 disabled:opacity-40">Previous</button>
+              <button disabled={page === 1} onClick={() => goPage(page - 1)} className="btn-ink !px-5 !py-2.5 disabled:opacity-40">Previous</button>
               <span className="eyebrow !text-gold-dark">Page {page}</span>
-              <button disabled={page * 12 >= data.total} onClick={() => setPage(page + 1)} className="btn-ink !px-5 !py-2.5 disabled:opacity-40">Next</button>
+              <button disabled={page * 12 >= data.total} onClick={() => goPage(page + 1)} className="btn-ink !px-5 !py-2.5 disabled:opacity-40">Next</button>
             </nav>
           )}
         </div>

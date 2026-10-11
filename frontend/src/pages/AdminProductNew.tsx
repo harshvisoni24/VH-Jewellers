@@ -24,8 +24,8 @@ export default function AdminProductNew() {
       <h1 className="font-display text-4xl text-gold">Add product</h1>
       <input name="name" placeholder="Name" required className={c} /><input name="sku" placeholder="SKU" required className={c} />
       <select name="categoryId" required className={c}><option value="">Category</option>{cats.data?.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</select>
-      <div className="grid grid-cols-3 gap-2"><input name="price" type="number" min={1} placeholder="Price (₹)" required className={c} /><input name="discount" type="number" min={0} max={90} placeholder="Discount %" className={c} /><input name="stock" type="number" min={0} placeholder="Stock" required className={c} /></div>
-      <div className="grid grid-cols-3 gap-2"><input name="material" placeholder="Material" required className={c} /><input name="purity" placeholder="Purity" className={c} /><input name="weight" type="number" step="0.01" placeholder="Weight (g)" className={c} /></div>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3"><input name="price" type="number" min={1} placeholder="Price (₹)" required className={c} /><input name="discount" type="number" min={0} max={90} placeholder="Discount %" className={c} /><input name="stock" type="number" min={0} placeholder="Stock" required className={c} /></div>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3"><input name="material" placeholder="Material" required className={c} /><input name="purity" placeholder="Purity" className={c} /><input name="weight" type="number" step="0.01" placeholder="Weight (g)" className={c} /></div>
       <input name="brand" placeholder="Brand" className={c} /><textarea name="description" placeholder="Description" required className={c} />
       <textarea name="images" placeholder="Image URLs (one per line, first is the main image)" className={c} />
       {error && <p role="alert" className="text-rose-300">{error}</p>}

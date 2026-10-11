@@ -2,6 +2,7 @@ import { Router } from "express";
 import { OrderStatus, Prisma, ProductStatus } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "../middleware/auth";
+import { receiptSelect, sendReceipt } from "../utils/receipt";
 
 /**
  * Seller-portal list endpoints (products, orders, inventory, customers).
@@ -82,6 +83,13 @@ adminLists.get("/orders", async (req, res) => {
     select: { id: true, orderNumber: true, status: true, totalPaise: true, createdAt: true, user: { select: { name: true, email: true } },
       items: { select: { id: true, productNameSnapshot: true } }, payments: { select: { status: true, method: true } } } });
   res.json({ total: info.total, page: info.page, pageSize: info.pageSize, pages: info.pages, items });
+});
+
+// The customer's receipt as a PDF, opened from the Orders list.
+adminLists.get("/orders/:id/receipt", async (req, res) => {
+  const o = await prisma.order.findUnique({ where: { id: req.params.id }, select: receiptSelect });
+  if (!o) return res.status(404).json({ error: "Order not found." });
+  await sendReceipt(res, o, "inline");
 });
 
 // ---------- Inventory ----------

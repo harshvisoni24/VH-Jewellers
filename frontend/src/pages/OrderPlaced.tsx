@@ -1,9 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
+import { Download } from "lucide-react";
 import { rupees } from "../api/client";
 import Ornament from "../components/Ornament";
 import SectionTitle from "../components/SectionTitle";
 
-interface Placed { orderNumber: string; subtotalPaise: number; discountPaise: number; deliveryPaise: number; totalPaise: number; items: { name: string; quantity: number; pricePaise: number }[] }
+interface Placed { email?: string; orderNumber: string; subtotalPaise: number; discountPaise: number; deliveryPaise: number; totalPaise: number; items: { name: string; quantity: number; pricePaise: number }[] }
 
 export default function OrderPlaced() {
   const order = useLocation().state as Placed | null;
@@ -26,7 +27,9 @@ export default function OrderPlaced() {
         <li className="flex justify-between text-sm"><span>Delivery</span><span>{order.deliveryPaise ? rupees(order.deliveryPaise) : "Free"}</span></li>
         <li className="flex items-baseline justify-between border-t pt-3"><span className="eyebrow">Pay on delivery</span><strong className="font-display text-3xl font-medium text-gold">{rupees(order.totalPaise)}</strong></li></ul>
       <p className="mt-5 text-center text-sm text-ink/70">We'll confirm your order and deliver it in 3–7 working days.</p>
-      <div className="mt-8 flex flex-wrap justify-center gap-4"><Link to={`/track?order=${encodeURIComponent(order.orderNumber)}`} className="btn-gold">Track this order</Link><Link to="/" className="btn-outline">Continue shopping</Link></div>
+      <div className="mt-8 flex flex-wrap justify-center gap-4">
+        {order.email && <a href={`/api/shop/receipt?${new URLSearchParams({ orderNumber: order.orderNumber, email: order.email })}`} download className="btn-gold"><Download size={16} strokeWidth={1.6} />Download receipt</a>}
+        <Link to={`/track?order=${encodeURIComponent(order.orderNumber)}`} className="btn-outline">Track this order</Link><Link to="/" className="btn-outline">Continue shopping</Link></div>
     </div>
   );
 }

@@ -5,8 +5,8 @@ import { FilterBar, Paged, Pager, SelectFilter, TextFilter, useListState } from 
 
 interface Cat { id: string; name: string }
 const Table = ({ title, head, children }: { title: string; head: string[]; children: ReactNode }) => (
-  <table className="mt-6 w-full min-w-[600px] bg-panel text-left text-sm"><caption className="sr-only">{title}</caption>
-    <thead><tr className="border-b">{head.map((h) => <th key={h} className="p-3">{h}</th>)}</tr></thead><tbody>{children}</tbody></table>);
+  <div className="mt-6 overflow-x-auto"><table className="w-full min-w-[600px] bg-panel text-left text-sm"><caption className="sr-only">{title}</caption>
+    <thead><tr className="border-b">{head.map((h) => <th key={h} className="p-3">{h}</th>)}</tr></thead><tbody>{children}</tbody></table></div>);
 const td = "p-3";
 
 export function AdminInventory() {

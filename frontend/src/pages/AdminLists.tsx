@@ -4,7 +4,7 @@ import { api, rupees } from "../api/client";
 
 const Table = ({ title, head, children }: { title: string; head: string[]; children: React.ReactNode }) => (
   <div className="px-5 py-6"><h1 className="font-display text-4xl text-gold">{title}</h1>
-    <table className="mt-6 w-full min-w-[600px] bg-panel text-left text-sm"><thead><tr className="border-b">{head.map((h) => <th key={h} className="p-3">{h}</th>)}</tr></thead><tbody>{children}</tbody></table></div>);
+    <div className="mt-6 overflow-x-auto"><table className="w-full min-w-[600px] bg-panel text-left text-sm"><thead><tr className="border-b">{head.map((h) => <th key={h} className="p-3">{h}</th>)}</tr></thead><tbody>{children}</tbody></table></div></div>);
 const td = "p-3";
 
 export { AdminInventory, AdminCustomers } from "./AdminInventoryCustomers";

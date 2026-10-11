@@ -12,9 +12,9 @@ export default { content: ["./index.html", "./src/**/*.{ts,tsx}"],
     },
     borderColor: { DEFAULT: "rgb(219 176 119 / 0.28)" }, // a plain `border` is a fine gold hairline
     fontFamily: {
-      display: ["Cormorant Garamond", "Georgia", "serif"], // headings
-      crest: ["Cinzel", "Georgia", "serif"],               // logo lettering only
-      sans: ["EB Garamond", "Georgia", "serif"],           // body text
+      display: ["VH Numerals", "Cormorant Garamond", "Georgia", "serif"], // headings
+      crest: ["VH Numerals", "Cinzel", "Georgia", "serif"],  // logo lettering only
+      sans: ["VH Numerals", "EB Garamond", "Georgia", "serif"], // body text; "VH Numerals" only supplies the digits
     },
     boxShadow: { gold: "0 10px 30px rgb(0 0 0 / 0.35), 0 0 0 1px rgb(219 176 119 / 0.5)" },
   } } };

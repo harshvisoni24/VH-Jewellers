@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { Navigate, Route, Routes, useLocation, useNavigationType } from "react-router-dom";
 import AuthForm from "./pages/AuthForm";
 import Shop from "./pages/Shop";
 import Cart from "./pages/Cart";
@@ -18,8 +19,18 @@ import Notifications from "./pages/Notifications";
 import { AdminCategories, AdminCoupons, AdminCustomers, AdminInventory, AdminReviews } from "./pages/AdminLists";
 import RequireRole from "./components/RequireRole";
 
+/** Opening a page always starts at its top (going Back keeps the browser's own scroll position). */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  const type = useNavigationType();
+  useEffect(() => { if (type !== "POP") window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior }); }, [pathname, type]);
+  return null;
+}
+
 export default function App() {
   return (
+    <>
+    <ScrollToTop />
     <Routes>
       <Route path="/login" element={<AuthForm mode="login" />} />
       {/* Storefront: open to everyone, no account. The navbar (with the cart) is shared by all these pages. */}
@@ -49,5 +60,6 @@ export default function App() {
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   );
 }

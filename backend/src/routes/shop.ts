@@ -7,6 +7,7 @@ import { z } from "zod";
 import { prisma } from "../middleware/auth";
 import { couponDiscount, finalPrice } from "../utils/pricing";
 import { getSettings } from "../utils/settings";
+import { receiptSelect, sendReceipt } from "../utils/receipt";
 
 /**
  * Public storefront API (mounted at /api/shop). No login: buyers keep their cart in the browser and
@@ -121,6 +122,15 @@ shop.get("/track", rateLimit({ windowMs: 15 * 60_000, limit: 30, message: { erro
       address: { select: { fullName: true, city: true, state: true, pincode: true } } } });
   if (!o) return res.status(404).json({ error: "We couldn't find an order with those details. Check the order number and email." });
   res.json({ ...o, items: o.items.map((i) => ({ name: i.productNameSnapshot, quantity: i.quantity, pricePaise: i.priceAtPurchasePaise })) });
+});
+
+// ---------- Receipt (PDF download): same proof as tracking, the order number plus the checkout email ----------
+shop.get("/receipt", rateLimit({ windowMs: 15 * 60_000, limit: 30, message: { error: "Too many requests. Please try again in a few minutes." } }), async (req, res) => {
+  const q = z.object({ orderNumber: z.string().trim().min(3).max(40), email: z.string().trim().email() }).safeParse(req.query);
+  if (!q.success) return res.status(422).json({ error: "Enter your order number and the email you used at checkout." });
+  const o = await prisma.order.findFirst({ where: { orderNumber: ci(q.data.orderNumber), user: { email: ci(q.data.email) } }, select: receiptSelect });
+  if (!o) return res.status(404).json({ error: "We couldn't find an order with those details." });
+  await sendReceipt(res, o, "attachment");
 });
 
 // ---------- Reviews: proven by order number + email (only real customers can review) ----------

@@ -6,7 +6,7 @@ import Logo from "./Logo";
 
 const Badge = ({ n }: { n: number }) => n > 0 ? <span className="absolute -right-2.5 -top-2 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-gold px-1 text-[11px] font-semibold leading-none text-night !tracking-normal">{n}</span> : null;
 const word = ({ isActive }: { isActive: boolean }) => `relative py-2 text-[1.02rem] tracking-[0.05em] transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-px after:transition-colors ${isActive ? "text-gold after:bg-gold" : "text-pearl after:bg-transparent hover:text-gold"}`;
-const icon = ({ isActive }: { isActive: boolean }) => `relative p-1 transition-colors ${isActive ? "text-gold" : "text-pearl hover:text-gold"}`;
+const icon = ({ isActive }: { isActive: boolean }) => `relative p-1.5 transition-colors ${isActive ? "text-gold" : "text-pearl hover:text-gold"}`;
 
 /** Navigation bar shown on every storefront page (home, product, cart, …). It stays pinned to the top while scrolling. */
 export default function StoreLayout() {

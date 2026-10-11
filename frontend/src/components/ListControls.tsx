@@ -59,8 +59,9 @@ function pageNumbers(page: number, pages: number): (number | "…")[] {
   return out;
 }
 
-export function Pager({ data, onPage }: { data?: Paged<unknown>; onPage: (p: number) => void }) {
+export function Pager({ data, onPage: setPage }: { data?: Paged<unknown>; onPage: (p: number) => void }) {
   if (!data) return null;
+  const onPage = (n: number) => { setPage(n); window.scrollTo({ top: 0, behavior: "smooth" }); };
   if (!data.total) return null;
   const from = (data.page - 1) * data.pageSize + 1, to = Math.min(data.total, data.page * data.pageSize);
   const btn = "min-w-9 rounded-sm border border-gold/30 bg-panel px-3 py-1.5 text-sm disabled:opacity-40";
