@@ -37,9 +37,12 @@ export default function AdminProductEdit() {
       <h2 className="mt-8 font-display text-2xl">Images</h2>
       <ul className="mt-2 flex flex-wrap gap-3">{p.images.map((im) => <li key={im.id}><img src={im.url} alt="" className="h-24 w-24 object-cover" /><button onClick={() => api(`/admin/images/${im.id}`, { method: "DELETE" }).then(refresh)} className="text-sm text-rose-300 underline">Remove</button></li>)}</ul>
       <form onSubmit={addImage} className="mt-3 flex gap-2"><input name="url" type="url" placeholder="Image URL" required className={c} /><button className="rounded-sm border border-gold/60 bg-night/40 px-4 text-gold">Add</button></form>
-      <label className="mt-3 block text-sm">Or upload from your computer (JPG, PNG or WebP, up to 5 MB)
-        <input type="file" accept="image/jpeg,image/png,image/webp" className="mt-1 block" onChange={(e) => { const file = e.target.files?.[0]; if (!file) return; const fd = new FormData(); fd.append("image", file);
-          api(`/admin/products/${id}/images/upload`, { method: "POST", body: fd }).then(refresh).catch((x) => setMsg(x.message)); e.target.value = ""; }} /></label>
+      <label className="mt-3 block text-sm">Or upload from your computer (JPG, PNG or WebP, up to 5 MB each; you can pick several)
+        <input type="file" multiple accept="image/jpeg,image/png,image/webp" className="mt-1 block" onChange={async (e) => {
+          const picked = Array.from(e.target.files ?? []); e.target.value = "";
+          for (const file of picked) { const fd = new FormData(); fd.append("image", file);
+            try { await api(`/admin/products/${id}/images/upload`, { method: "POST", body: fd }); } catch (x) { setMsg((x as Error).message); } }
+          refresh(); }} /></label>
     </div>
   );
 }
