@@ -4,13 +4,14 @@ import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
 import { api, rupees } from "../api/client";
 import HomeSections from "../components/HomeSections";
+import SectionTitle from "../components/SectionTitle";
 import { useCart } from "../context/CartContext";
 
 interface Product { id: string; name: string; sku: string; material: string; purity?: string; pricePaise: number; finalPricePaise: number;
   discountPercent: number; stock: number; images: { url: string }[] }
 interface Page { total: number; items: Product[] }
 const EMPTY = { material: "", minPrice: "", maxPrice: "", minRating: "", inStock: "" };
-const box = "rounded-sm border border-ink/20 bg-white px-3 py-2";
+const sel = "border border-gold/30 bg-night/60 px-3 py-2 text-sm";
 
 export default function Shop() {
   const cart = useCart();
@@ -31,60 +32,66 @@ export default function Shop() {
     setFlash({ id: p.id, text: r === "added" ? "Added ✓" : "Max in cart" });
     setTimeout(() => setFlash((cur) => (cur?.id === p.id ? null : cur)), 1500);
   };
+  const searching = !!(q || category || filtered);
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-6">
-      <section aria-label="Find jewellery" className="bg-white p-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative min-w-0 flex-1 basis-64">
-            <Search size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink/50" />
-            <input value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} placeholder="Search rings, gold, SKU…" aria-label="Search products" list="sugg" className={`${box} w-full pl-10`} />
+    <div>
+      <section aria-label="Find jewellery" className="mx-auto max-w-6xl px-5 pt-10">
+        <div className="bg-panel/80 p-5 sm:p-6">
+          <div className="relative">
+            <Search size={20} strokeWidth={1.4} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gold" />
+            <input value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} placeholder="Search rings, necklaces, gold, SKU…" aria-label="Search products" list="sugg" className="w-full !py-3.5 !pl-12 text-lg" />
           </div>
-          <select value={category} onChange={(e) => { setCategory(e.target.value); setPage(1); }} aria-label="Category" className={box}><option value="">All categories</option>{cats.data?.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}</select>
-          <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort" className={box}>
-            <option value="newest">Newest</option><option value="price_asc">Price: low to high</option>
-            <option value="price_desc">Price: high to low</option><option value="rating">Top rated</option>
-          </select>
-        </div>
-        <datalist id="sugg">{sugg.data?.map((n) => <option key={n} value={n} />)}</datalist>
-        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
-          <select value={f.material} onChange={(e) => setFilter({ material: e.target.value })} aria-label="Material" className="border px-2 py-1"><option value="">Any material</option>{["Gold", "Silver", "Platinum"].map((m) => <option key={m}>{m}</option>)}</select>
-          <input type="number" min={0} placeholder="Min ₹" value={f.minPrice} onChange={(e) => setFilter({ minPrice: e.target.value })} className="w-24 border px-2 py-1" aria-label="Minimum price" />
-          <input type="number" min={0} placeholder="Max ₹" value={f.maxPrice} onChange={(e) => setFilter({ maxPrice: e.target.value })} className="w-24 border px-2 py-1" aria-label="Maximum price" />
-          <select value={f.minRating} onChange={(e) => setFilter({ minRating: e.target.value })} aria-label="Minimum rating" className="border px-2 py-1"><option value="">Any rating</option><option value="4">4 stars and up</option><option value="3">3 stars and up</option></select>
-          <label><input type="checkbox" checked={!!f.inStock} onChange={(e) => setFilter({ inStock: e.target.checked ? "1" : "" })} /> In stock only</label>
-          {filtered && <button onClick={() => { setF(EMPTY); setPage(1); }} className="underline">Clear filters</button>}
+          <datalist id="sugg">{sugg.data?.map((n) => <option key={n} value={n} />)}</datalist>
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+            <select value={category} onChange={(e) => { setCategory(e.target.value); setPage(1); }} aria-label="Category" className={sel}><option value="">All categories</option>{cats.data?.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}</select>
+            <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort" className={sel}>
+              <option value="newest">Newest</option><option value="price_asc">Price: low to high</option>
+              <option value="price_desc">Price: high to low</option><option value="rating">Top rated</option>
+            </select>
+            <select value={f.material} onChange={(e) => setFilter({ material: e.target.value })} aria-label="Material" className={sel}><option value="">Any material</option>{["Gold", "Silver", "Platinum"].map((m) => <option key={m}>{m}</option>)}</select>
+            <input type="number" min={0} placeholder="Min ₹" value={f.minPrice} onChange={(e) => setFilter({ minPrice: e.target.value })} className="w-24 !py-2 text-sm" aria-label="Minimum price" />
+            <input type="number" min={0} placeholder="Max ₹" value={f.maxPrice} onChange={(e) => setFilter({ maxPrice: e.target.value })} className="w-24 !py-2 text-sm" aria-label="Maximum price" />
+            <select value={f.minRating} onChange={(e) => setFilter({ minRating: e.target.value })} aria-label="Minimum rating" className={sel}><option value="">Any rating</option><option value="4">4 stars and up</option><option value="3">3 stars and up</option></select>
+            <label className="flex items-center gap-2"><input type="checkbox" checked={!!f.inStock} onChange={(e) => setFilter({ inStock: e.target.checked ? "1" : "" })} /> In stock only</label>
+            {filtered && <button onClick={() => { setF(EMPTY); setPage(1); }} className="eyebrow !tracking-[0.2em] underline underline-offset-4">Clear filters</button>}
+          </div>
         </div>
       </section>
 
-      {!q && !category && !filtered && page === 1 && <HomeSections />}
+      {!searching && page === 1 && <div className="mx-auto max-w-6xl px-5"><HomeSections /></div>}
 
-      <h2 className="mt-10 font-display text-2xl text-emerald">{q || category || filtered ? "Search results" : "All jewellery"}</h2>
-      {isLoading && <p className="mt-6 text-ink/60">Loading jewellery…</p>}
-      {error && <p className="mt-6 text-red-700">{(error as Error).message}</p>}
-      {data && data.items.length === 0 && <p className="mt-6">{q ? `No products match “${q}”. Try a different word.` : "No products to show yet."}</p>}
-      <ul className="mt-4 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
-        {data?.items.map((p) => (
-          <li key={p.id} className="bg-white">
-            <Link to={`/products/${p.id}`}>{p.images[0] ? <img src={p.images[0].url} alt={p.name} loading="lazy" className="aspect-square w-full object-cover" /> : <div className="aspect-square w-full bg-ink/5" />}</Link>
-            <div className="p-3">
-              <h3 className="font-display text-xl"><Link to={`/products/${p.id}`}>{p.name}</Link></h3>
-              <p className="text-sm text-ink/60">{p.material}{p.purity && ` · ${p.purity}`}</p>
-              <p className="mt-1 font-medium">{rupees(p.finalPricePaise)}
-                {p.discountPercent > 0 && <span className="ml-2 text-sm text-ink/50 line-through">{rupees(p.pricePaise)}</span>}</p>
-              {p.stock === 0 ? <p className="mt-2 text-sm text-red-700">Out of stock</p>
-                : <button onClick={() => addToCart(p)} className="mt-2 w-full rounded-sm bg-gold py-2 text-sm text-white">{flash?.id === p.id ? flash.text : "Add to cart"}</button>}
-            </div>
-          </li>
-        ))}
-      </ul>
-      {data && data.total > 12 && (
-        <nav className="mt-8 flex justify-center gap-4">
-          <button disabled={page === 1} onClick={() => setPage(page - 1)}>Previous</button>
-          <span>Page {page}</span>
-          <button disabled={page * 12 >= data.total} onClick={() => setPage(page + 1)}>Next</button>
-        </nav>
-      )}
+      {/* The collection sits on a light band, like pages of a catalogue. */}
+      <section className="cream-band mt-24 py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl px-5">
+          <SectionTitle tone="cream" eyebrow={searching ? "Your search" : "The collection"} title={searching ? "Search results" : "All jewellery"} />
+          {isLoading && <p className="mt-10 text-center text-night/70">Loading jewellery…</p>}
+          {error && <p className="mt-10 text-center text-red-800">{(error as Error).message}</p>}
+          {data && data.items.length === 0 && <p className="mt-10 text-center text-night/70">{q ? `No products match “${q}”. Try a different word.` : "No products to show yet."}</p>}
+          <ul className="mt-12 grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
+            {data?.items.map((p) => (
+              <li key={p.id} className="group text-center">
+                <Link to={`/products/${p.id}`} className="block overflow-hidden bg-night">
+                  {p.images[0] ? <img src={p.images[0].url} alt={p.name} loading="lazy" className="aspect-square w-full object-cover transition duration-700 group-hover:scale-105" /> : <div className="aspect-square w-full bg-night" />}
+                </Link>
+                <h3 className="mt-4 font-display text-xl !text-night"><Link to={`/products/${p.id}`} className="transition-colors hover:!text-gold-dark">{p.name}</Link></h3>
+                <p className="text-sm text-night/60">{p.material}{p.purity && ` · ${p.purity}`}</p>
+                <p className="mt-1 text-lg text-gold-dark">{rupees(p.finalPricePaise)}
+                  {p.discountPercent > 0 && <span className="ml-2 text-sm text-night/50 line-through">{rupees(p.pricePaise)}</span>}</p>
+                {p.stock === 0 ? <p className="mt-3 text-sm text-red-800">Out of stock</p>
+                  : <button onClick={() => addToCart(p)} className="btn-ink mt-3 !px-6 !py-2.5">{flash?.id === p.id ? flash.text : "Add to cart"}</button>}
+              </li>
+            ))}
+          </ul>
+          {data && data.total > 12 && (
+            <nav aria-label="Pagination" className="mt-14 flex items-center justify-center gap-6">
+              <button disabled={page === 1} onClick={() => setPage(page - 1)} className="btn-ink !px-5 !py-2.5 disabled:opacity-40">Previous</button>
+              <span className="eyebrow !text-gold-dark">Page {page}</span>
+              <button disabled={page * 12 >= data.total} onClick={() => setPage(page + 1)} className="btn-ink !px-5 !py-2.5 disabled:opacity-40">Next</button>
+            </nav>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

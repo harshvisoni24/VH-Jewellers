@@ -1,3 +1,65 @@
 @tailwind base; @tailwind components; @tailwind utilities;
-body { @apply bg-pearl text-ink font-sans antialiased; }
-:focus-visible { outline: 2px solid #B08D4C; outline-offset: 3px; }
+
+@layer base {
+  :root { color-scheme: dark; } /* dark date pickers, scrollbars and form controls */
+  html { font-size: 18px; scroll-behavior: smooth; }
+  body {
+    @apply bg-night font-sans text-ink antialiased;
+    min-height: 100vh;
+    /* a barely-there diamond lattice, like damask, over a soft glow at the top */
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23DBB077' stroke-opacity='0.055'%3E%3Cpath d='M32 6 58 32 32 58 6 32Z'/%3E%3Cpath d='M32 22 42 32 32 42 22 32Z'/%3E%3C/g%3E%3C/svg%3E"),
+      radial-gradient(900px 480px at 50% -6%, rgb(26 84 58 / 0.45), transparent 65%);
+    background-attachment: fixed, fixed;
+  }
+  h1, h2, h3, h4 { @apply font-display font-medium text-gold; line-height: 1.12; }
+  ::selection { background: #DBB077; color: #071C12; }
+  :focus-visible { outline: 1px solid #EDCFA2; outline-offset: 4px; }
+  ::placeholder { color: rgb(228 218 196 / 0.4); }
+  /* :where() keeps these defaults at zero specificity, so any Tailwind class on a field still wins. */
+  :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) {
+    background-color: rgb(4 20 13 / 0.55); color: #F1E8D4; border: 1px solid rgb(219 176 119 / 0.35); border-radius: 0; padding: 0.6rem 0.85rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  :where(input, select, textarea):focus { border-color: #DBB077; outline: none; box-shadow: 0 0 0 1px #DBB077; }
+  :where(input[type="checkbox"], input[type="radio"]) { accent-color: #DBB077; }
+  select option { background: #0B2518; color: #F1E8D4; }
+  button { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  table { border-collapse: collapse; }
+  thead th { text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.7rem; font-weight: 500; color: #DBB077; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #05160E; }
+  ::-webkit-scrollbar-thumb { background: rgb(219 176 119 / 0.4); }
+}
+
+@layer components {
+  /* Small spaced capitals used for labels and overlines. */
+  .eyebrow { text-transform: uppercase; letter-spacing: 0.3em; font-size: 0.7rem; font-weight: 500; color: #DBB077; }
+
+  /* Buttons: sharp corners, spaced capitals, gold. */
+  .btn-gold, .btn-outline, .btn-ink, .bg-gold {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; text-align: center;
+    text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.74rem; font-weight: 600; line-height: 1.2;
+    transition: filter 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .btn-gold, .btn-outline, .btn-ink { padding: 0.9rem 1.8rem; }
+  .btn-gold, .bg-gold { background-image: linear-gradient(180deg, #E8C48F 0%, #D3A66B 100%); color: #071C12; border: 1px solid #D3A66B; }
+  .btn-gold:not(:disabled):hover, .bg-gold:not(:disabled):hover { filter: brightness(1.07); }
+  .btn-outline { color: #DBB077; border: 1px solid rgb(219 176 119 / 0.6); }
+  .btn-outline:not(:disabled):hover { background-color: rgb(219 176 119 / 0.12); border-color: #DBB077; }
+  .btn-ink { color: #0B2518; border: 1px solid rgb(11 37 24 / 0.55); } /* for use on the cream section */
+  .btn-ink:not(:disabled):hover { background-color: #0B2518; color: #F1E8D4; border-color: #0B2518; }
+
+  /* Cards, tables and forms: a lighter green panel framed by a gold hairline. */
+  .bg-panel { border: 1px solid rgb(219 176 119 / 0.22); }
+
+  /* The light section between the dark ones. */
+  .cream-band {
+    background-color: #E9DFCB; color: #0B2518;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%237A5A2A' stroke-opacity='0.07'%3E%3Cpath d='M32 6 58 32 32 58 6 32Z'/%3E%3Cpath d='M32 22 42 32 32 42 22 32Z'/%3E%3C/g%3E%3C/svg%3E");
+    border-top: 1px solid rgb(219 176 119 / 0.5); border-bottom: 1px solid rgb(219 176 119 / 0.5);
+  }
+  .rule { height: 1px; background-image: linear-gradient(90deg, transparent, rgb(219 176 119 / 0.6), transparent); }
+  tbody tr:hover { background-color: rgb(219 176 119 / 0.05); }
+}

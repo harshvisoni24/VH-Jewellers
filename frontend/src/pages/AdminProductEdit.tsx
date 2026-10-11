@@ -21,10 +21,10 @@ export default function AdminProductEdit() {
   }
   const addImage = (e: FormEvent<HTMLFormElement>) => { e.preventDefault(); const el = e.currentTarget; api(`/admin/products/${id}/images`, { method: "POST", json: { url: new FormData(el).get("url") } }).then(() => { el.reset(); refresh(); }).catch((x) => setMsg(x.message)); };
   if (!p) return <p className="p-6">Loading…</p>;
-  const c = "w-full rounded-sm border border-ink/20 px-3 py-2";
+  const c = "w-full rounded-sm border border-gold/30 px-3 py-2";
   return (
     <div className="max-w-xl px-5 py-6">
-      <h1 className="font-display text-3xl text-emerald">Edit product</h1>
+      <h1 className="font-display text-4xl text-gold">Edit product</h1>
       <form onSubmit={save} className="mt-4 space-y-3">
         <input name="name" defaultValue={p.name} required className={c} aria-label="Name" />
         <div className="grid grid-cols-3 gap-2"><input name="price" type="number" defaultValue={p.pricePaise / 100} required className={c} aria-label="Price (₹)" /><input name="discount" type="number" min={0} max={90} defaultValue={p.discountPercent} className={c} aria-label="Discount %" /><input name="stock" type="number" min={0} defaultValue={p.stock} required className={c} aria-label="Stock" /></div>
@@ -32,11 +32,11 @@ export default function AdminProductEdit() {
         <div className="grid grid-cols-3 gap-2"><input name="size" defaultValue={p.size ?? ""} placeholder="Size" className={c} /><input name="color" defaultValue={p.color ?? ""} placeholder="Colour" className={c} /><input name="brand" defaultValue={p.brand ?? ""} placeholder="Brand" className={c} /></div>
         <textarea name="description" defaultValue={p.description} required className={c} aria-label="Description" />
         <select name="status" defaultValue={p.status} className={c} aria-label="Status"><option value="ACTIVE">Active</option><option value="DRAFT">Draft</option><option value="ARCHIVED">Archived</option></select>
-        <button className="rounded-sm bg-gold px-5 py-3 text-white">Save changes</button></form>
-      {msg && <p role="alert" className="mt-2 text-red-700">{msg}</p>}
+        <button className="rounded-sm bg-gold px-5 py-3 text-night">Save changes</button></form>
+      {msg && <p role="alert" className="mt-2 text-rose-300">{msg}</p>}
       <h2 className="mt-8 font-display text-2xl">Images</h2>
-      <ul className="mt-2 flex flex-wrap gap-3">{p.images.map((im) => <li key={im.id}><img src={im.url} alt="" className="h-24 w-24 object-cover" /><button onClick={() => api(`/admin/images/${im.id}`, { method: "DELETE" }).then(refresh)} className="text-sm text-red-700 underline">Remove</button></li>)}</ul>
-      <form onSubmit={addImage} className="mt-3 flex gap-2"><input name="url" type="url" placeholder="Image URL" required className={c} /><button className="rounded-sm bg-emerald px-4 text-white">Add</button></form>
+      <ul className="mt-2 flex flex-wrap gap-3">{p.images.map((im) => <li key={im.id}><img src={im.url} alt="" className="h-24 w-24 object-cover" /><button onClick={() => api(`/admin/images/${im.id}`, { method: "DELETE" }).then(refresh)} className="text-sm text-rose-300 underline">Remove</button></li>)}</ul>
+      <form onSubmit={addImage} className="mt-3 flex gap-2"><input name="url" type="url" placeholder="Image URL" required className={c} /><button className="rounded-sm border border-gold/60 bg-night/40 px-4 text-gold">Add</button></form>
       <label className="mt-3 block text-sm">Or upload from your computer (JPG, PNG or WebP, up to 5 MB)
         <input type="file" accept="image/jpeg,image/png,image/webp" className="mt-1 block" onChange={(e) => { const file = e.target.files?.[0]; if (!file) return; const fd = new FormData(); fd.append("image", file);
           api(`/admin/products/${id}/images/upload`, { method: "POST", body: fd }).then(refresh).catch((x) => setMsg(x.message)); e.target.value = ""; }} /></label>

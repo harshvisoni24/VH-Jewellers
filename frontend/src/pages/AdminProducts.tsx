@@ -22,7 +22,7 @@ export default function AdminProducts() {
     .catch((e) => alert(e.message));
   return (
     <div className="px-5 py-6">
-      <h1 className="font-display text-3xl text-emerald">Products</h1>
+      <h1 className="font-display text-4xl text-gold">Products</h1>
       <FilterBar onReset={list.reset} active={list.active}>
         <TextFilter label="Search name or SKU" value={f.q} onChange={(v) => list.set("q", v)} placeholder="e.g. Gold Ring" />
         <SelectFilter label="Category" value={f.category} onChange={(v) => list.set("category", v)} options={[["", "All categories"], ...(cats.data ?? []).map((c): [string, string] => [c.id, c.name])]} />
@@ -31,8 +31,8 @@ export default function AdminProducts() {
         <TextFilter label="Min price (₹)" type="number" value={f.minPrice} onChange={(v) => list.set("minPrice", v)} />
         <TextFilter label="Max price (₹)" type="number" value={f.maxPrice} onChange={(v) => list.set("maxPrice", v)} />
       </FilterBar>
-      {isLoading && <p className="mt-6">Loading…</p>}{error && <p className="mt-6 text-red-700">{(error as Error).message}</p>}
-      <table className="mt-6 w-full min-w-[800px] bg-white text-left text-sm">
+      {isLoading && <p className="mt-6">Loading…</p>}{error && <p className="mt-6 text-rose-300">{(error as Error).message}</p>}
+      <table className="mt-6 w-full min-w-[800px] bg-panel text-left text-sm">
         <thead><tr className="border-b"><th className="p-3">Name</th><th>Category</th><th>SKU</th><th>Price (₹)</th><th>Discount %</th><th>Stock</th><th>Stock status</th><th>Status</th><th /></tr></thead>
         <tbody>{data?.items.map((p) => (
           <tr key={`${p.id}-${p.pricePaise}-${p.discountPercent}-${p.stock}`} className="border-b"><td className="p-3">{p.name}</td><td>{p.category.name}</td><td>{p.sku}</td>
@@ -41,7 +41,7 @@ export default function AdminProducts() {
             <td><input type="number" min={0} defaultValue={p.stock} className="w-16 border px-1" onBlur={(e) => Number(e.target.value) !== p.stock && save(p.id, { stock: Number(e.target.value) })} aria-label="Stock" /></td>
             <td>{p.stock === 0 ? "Out of stock" : p.stock <= 3 ? "Low stock" : "In stock"}</td>
             <td>{p.status.charAt(0) + p.status.slice(1).toLowerCase()}</td>
-            <td className="whitespace-nowrap pr-3"><Link to={`/admin/products/${p.id}`} className="mr-3 underline">Edit</Link><button onClick={() => del(p)} className="text-red-700 underline">Delete</button></td></tr>))}</tbody>
+            <td className="whitespace-nowrap pr-3"><Link to={`/admin/products/${p.id}`} className="mr-3 underline">Edit</Link><button onClick={() => del(p)} className="text-rose-300 underline">Delete</button></td></tr>))}</tbody>
       </table>
       {data && !data.total && <p className="mt-6">{list.active ? "No products match these filters." : <>No products yet. <Link to="/admin/products/new" className="underline">Add your first product</Link>.</>}</p>}
       <Pager data={data} onPage={list.setPage} />

@@ -1,5 +1,8 @@
 import { FormEvent, useState } from "react";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
+import { Home } from "lucide-react";
+import Logo from "../components/Logo";
+import Ornament from "../components/Ornament";
 import { useAuth } from "../context/AuthContext";
 
 /** Only same-site paths are allowed as the "go back to" target. */
@@ -24,21 +27,24 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
       else await register({ name: f.name, email: f.email.trim(), password: f.password });
     } catch (err) { setError((err as Error).message); } finally { setBusy(false); }
   }
-  const field = "mt-1 w-full rounded-sm border border-ink/20 px-3 py-2";
   const q = next ? `?next=${encodeURIComponent(next)}` : "";
   return (
-    <main className="grid min-h-screen place-items-center px-5">
-      <form onSubmit={submit} className="w-full max-w-sm rounded-sm bg-white p-8 shadow-sm">
-        <h1 className="font-display text-3xl text-emerald">{mode === "register" ? "Create account" : "Store login"}</h1>
-        {mode === "register" && <label className="mt-5 block text-sm">Full name<input name="name" required minLength={2} className={field} /></label>}
-        <label className="mt-4 block text-sm">Email<input name="email" type="email" required autoComplete="email" className={field} /></label>
-        <label className="mt-4 block text-sm">Password<input name="password" type="password" required minLength={mode === "register" ? 8 : 1} autoComplete={mode === "register" ? "new-password" : "current-password"} className={field} /></label>
-        {error && <p role="alert" className="mt-4 text-sm text-red-700">{error}</p>}
-        <button disabled={busy} className="mt-6 w-full rounded-sm bg-gold py-3 font-medium text-white disabled:opacity-60">{busy ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}</button>
-        {mode === "register" && <p className="mt-4 text-center text-sm">Already have an account? <Link to={`/login${q}`} className="text-emerald underline underline-offset-4">Log in</Link></p>}
-        {mode === "login" && <p className="mt-4 text-center text-xs text-ink/60">This login is for the store owner. Shoppers don't need an account: add items to the cart and check out with your details.</p>}
-        <Link to="/" className="mt-4 block text-center text-sm text-emerald underline underline-offset-4">Back to store</Link>
-      </form>
+    <main className="grid min-h-screen place-items-center px-5 py-10">
+      <div className="w-full max-w-sm">
+        <Link to="/" aria-label="VH Jewellers, home" className="mx-auto mb-8 block w-fit text-gold"><Logo /></Link>
+        <form onSubmit={submit} className="space-y-4 bg-panel p-8">
+          <h1 className="text-center text-4xl">{mode === "register" ? "Create account" : "Store login"}</h1>
+          <Ornament className="!mb-2" />
+          {mode === "register" && <label className="block"><span className="eyebrow !tracking-[0.2em]">Full name</span><input name="name" required minLength={2} className="mt-2 w-full" /></label>}
+          <label className="block"><span className="eyebrow !tracking-[0.2em]">Email</span><input name="email" type="email" required autoComplete="email" className="mt-2 w-full" /></label>
+          <label className="block"><span className="eyebrow !tracking-[0.2em]">Password</span><input name="password" type="password" required minLength={mode === "register" ? 8 : 1} autoComplete={mode === "register" ? "new-password" : "current-password"} className="mt-2 w-full" /></label>
+          {error && <p role="alert" className="text-sm text-rose-300">{error}</p>}
+          <button disabled={busy} className="btn-gold mt-2 w-full disabled:opacity-60">{busy ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}</button>
+          {mode === "register" && <p className="text-center text-sm">Already have an account? <Link to={`/login${q}`} className="text-gold underline underline-offset-4">Log in</Link></p>}
+          {mode === "login" && <p className="text-center text-xs leading-relaxed text-ink/60">This login is for the store owner. Shoppers don't need an account: add items to the cart and check out with your details.</p>}
+        </form>
+        <Link to="/" className="btn-outline mx-auto mt-6 flex w-fit"><Home size={16} strokeWidth={1.5} />Home</Link>
+      </div>
     </main>
   );
 }

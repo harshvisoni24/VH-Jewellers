@@ -19,7 +19,7 @@ export default function AdminOrders() {
   const update = (id: string, status: string) => api(`/admin/orders/${id}/status`, { method: "PATCH", json: { status } }).then(() => qc.invalidateQueries({ queryKey: ["admin-orders"] })).catch((e) => alert(e.message));
   return (
     <div className="px-5 py-6">
-      <h1 className="font-display text-3xl text-emerald">Orders</h1>
+      <h1 className="font-display text-4xl text-gold">Orders</h1>
       <FilterBar onReset={list.reset} active={list.active}>
         <TextFilter label="Search order no., customer" value={f.q} onChange={(v) => list.set("q", v)} placeholder="e.g. VH-1A2B or Asha" />
         <SelectFilter label="Order status" value={f.status} onChange={(v) => list.set("status", v)} options={[["", "All statuses"], ...STATUSES.map((s): [string, string] => [s, label(s)])]} />
@@ -28,8 +28,8 @@ export default function AdminOrders() {
         <TextFilter label="Min amount (₹)" type="number" value={f.minAmount} onChange={(v) => list.set("minAmount", v)} />
         <TextFilter label="Max amount (₹)" type="number" value={f.maxAmount} onChange={(v) => list.set("maxAmount", v)} />
       </FilterBar>
-      {isLoading && <p className="mt-6">Loading…</p>}{error && <p className="mt-6 text-red-700">{(error as Error).message}</p>}
-      <table className="mt-6 w-full min-w-[700px] bg-white text-left text-sm">
+      {isLoading && <p className="mt-6">Loading…</p>}{error && <p className="mt-6 text-rose-300">{(error as Error).message}</p>}
+      <table className="mt-6 w-full min-w-[700px] bg-panel text-left text-sm">
         <thead><tr className="border-b"><th className="p-3">Order</th><th>Customer</th><th>Items</th><th>Amount</th><th>Payment</th><th>Status</th><th>Date</th></tr></thead>
         <tbody>{data?.items.map((o) => (
           <tr key={o.id} className="border-b"><td className="p-3">{o.orderNumber}</td><td>{o.user.name}</td><td>{o.items.map((i) => i.productNameSnapshot).join(", ")}</td>

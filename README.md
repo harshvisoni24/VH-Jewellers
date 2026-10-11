@@ -12,14 +12,19 @@ cd ../frontend && npm install && npm run dev
 ```
 Money is stored as integer paise. `OrderItem.priceAtPurchasePaise` freezes the price at purchase.
 
-## First login
-The store opens on the buyer shop. Anyone can browse; the cart, wishlist, reviews and orders ask for a login.
-There is one **Log in** button for everybody: enter your admin email and password there and you are taken to the admin portal; buyers go back to the shop.
+## Look and feel
+Dark green and champagne gold with a cream catalogue band, thin gold lines, spaced capitals and ornament dividers. Fonts: Cormorant Garamond (headings), EB Garamond (text), Cinzel (logo lettering). Colours and fonts live in `frontend/tailwind.config.js`; shared styles (buttons `btn-gold`, `btn-outline`, `btn-ink`, `eyebrow`, `cream-band`) live in `frontend/src/index.css`. Fonts load from Google Fonts, so an internet connection is needed to see them.
 
+## How shopping and login work
+Shoppers need no account. The store opens on the shop; the cart (with a count badge in the top bar) and wishlist are kept in the browser.
+At checkout the shopper enters name, phone, email and delivery address, and the order is placed as **cash on delivery**. The order number plus the checkout email lets them track the order (Track order in the top bar).
+Prices, stock, coupons and delivery fees are always recalculated on the server (POST /api/shop/orders).
+
+The **Log in** button in the top bar is for the store owner only: enter the admin email and password and you are taken to the admin portal.
 `cd backend && npm run db:seed` creates the six product categories and the admin account (admin@vhjewellers.test / Admin@12345). No demo products, customers or orders.
 Admin login says "Email or password is incorrect."? Run `npm run create-admin` in `backend` (creates the admin or resets its password), or
 `npm run create-admin -- you@example.com 'YourPassword123'` to choose your own. Change the default password before going live.
-Buyers register themselves from the shop (Create account). Add products from Admin -> Add product.
+Add products from Admin -> Add product. New cash-on-delivery orders arrive as PENDING; move them to PROCESSING in Admin -> Orders to confirm them. Marking an order DELIVERED marks its payment as paid.
 
 Already seeded with the old demo data? Run `npm run db:clean-demo` once in `backend`. It removes only the demo buyers, their orders, the demo placeholder products and the WELCOME10 sample coupon. Products you gave real photos to are kept.
 

@@ -32,11 +32,11 @@ export function useListState<F extends Record<string, string>>(initial: F) {
   return { filters, page, setPage, set, reset, active, query, follow, key: [{ ...filters, q }, page] as const };
 }
 
-const field = "w-full rounded-sm border border-ink/20 bg-white px-2 py-1.5 text-sm";
+const field = "w-full rounded-sm border border-gold/30 bg-panel px-2 py-1.5 text-sm";
 
 export function FilterBar({ children, onReset, active }: { children: ReactNode; onReset: () => void; active: boolean }) {
   return (
-    <div className="mt-5 grid gap-3 bg-white p-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="mt-5 grid gap-3 bg-panel p-4 sm:grid-cols-2 lg:grid-cols-4">
       {children}
       <div className="flex items-end">{active && <button type="button" onClick={onReset} className="text-sm underline">Clear filters</button>}</div>
     </div>
@@ -63,14 +63,14 @@ export function Pager({ data, onPage }: { data?: Paged<unknown>; onPage: (p: num
   if (!data) return null;
   if (!data.total) return null;
   const from = (data.page - 1) * data.pageSize + 1, to = Math.min(data.total, data.page * data.pageSize);
-  const btn = "min-w-9 rounded-sm border border-ink/20 bg-white px-3 py-1.5 text-sm disabled:opacity-40";
+  const btn = "min-w-9 rounded-sm border border-gold/30 bg-panel px-3 py-1.5 text-sm disabled:opacity-40";
   return (
     <nav aria-label="Pagination" className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm">
       <p>Showing {from}–{to} of {data.total}</p>
       <div className="flex flex-wrap items-center gap-1">
         <button className={btn} disabled={data.page <= 1} onClick={() => onPage(data.page - 1)}>Previous</button>
         {pageNumbers(data.page, data.pages).map((n, i) => n === "…" ? <span key={`gap${i}`} className="px-1">…</span>
-          : <button key={n} aria-current={n === data.page ? "page" : undefined} onClick={() => onPage(n)} className={`${btn} ${n === data.page ? "!border-gold !bg-gold text-white !opacity-100" : ""}`}>{n}</button>)}
+          : <button key={n} aria-current={n === data.page ? "page" : undefined} onClick={() => onPage(n)} className={`${btn} ${n === data.page ? "!border-gold !bg-gold text-night !opacity-100" : ""}`}>{n}</button>)}
         <button className={btn} disabled={data.page >= data.pages} onClick={() => onPage(data.page + 1)}>Next</button>
       </div>
     </nav>
