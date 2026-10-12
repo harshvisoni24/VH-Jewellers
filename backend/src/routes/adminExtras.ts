@@ -76,7 +76,9 @@ adminExtras.get("/summary", async (_req, res) => {
     thisMonthPaise: a, lastMonthPaise: b, growthPercent: b ? Math.round(((a - b) / b) * 10000) / 100 : null });
 });
 
-adminExtras.get("/categories", async (_req, res) => res.json(await prisma.category.findMany({ orderBy: { name: "asc" }, include: { _count: { select: { products: true } } } })));
+// The product count leaves out archived products (sold items that were "deleted"): they no longer appear anywhere in the store.
+adminExtras.get("/categories", async (_req, res) => res.json(await prisma.category.findMany({ orderBy: { name: "asc" },
+  include: { _count: { select: { products: { where: { status: { not: "ARCHIVED" } } } } } } })));
 
 adminExtras.post("/categories", async (req, res) => {
   const b = z.object({ name: z.string().min(2).max(40) }).safeParse(req.body);
@@ -87,7 +89,12 @@ adminExtras.post("/categories", async (req, res) => {
 });
 
 adminExtras.delete("/categories/:id", async (req, res) => {
-  if (await prisma.product.count({ where: { categoryId: req.params.id } })) return res.status(409).json({ error: "Move or delete this category's products first." });
+  const [live, archived] = await Promise.all([
+    prisma.product.count({ where: { categoryId: req.params.id, status: { not: "ARCHIVED" } } }),
+    prisma.product.count({ where: { categoryId: req.params.id, status: "ARCHIVED" } }),
+  ]);
+  if (live) return res.status(409).json({ error: "Move or delete this category's products first." });
+  if (archived) return res.status(409).json({ error: `This category can't be deleted yet: ${archived} archived product${archived === 1 ? "" : "s"} in it ${archived === 1 ? "is" : "are"} part of past orders, so ${archived === 1 ? "it has" : "they have"} to be kept for order history. They are hidden from the store.` });
   await prisma.category.deleteMany({ where: { id: req.params.id } });
   res.status(204).end();
 });
